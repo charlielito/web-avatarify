@@ -2,6 +2,7 @@ vox-adv-cpk.pth.tar
 fomm/
 static/
 temp.mp4
+secrets.sh
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

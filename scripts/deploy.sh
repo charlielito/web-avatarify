@@ -1,6 +1,7 @@
 set -e
 
 source scripts/env.sh
+source secrets.sh
 
 # cloudrun args
 CONCURRENCY=1
@@ -24,7 +25,7 @@ fi
 # deploy built image
 #############################################################
 if $DEPLOY; then
-    ENV_VARS="API_TOKEN=${API_TOKEN},DEVICE=${DEVICE}"
+    ENV_VARS="API_TOKEN=${API_TOKEN}"
 
     
     gcloud run deploy \
