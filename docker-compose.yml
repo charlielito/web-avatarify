@@ -1,15 +1,27 @@
-version: "3.7"
+version: "2.3"
 
 services:
   server:
     build:
       context: .
 
-    # image: ${IMAGE}
-
     ports:
-      - "8000:8000"
+      - "$PORT:$PORT"
 
     environment:
-      PORT: 8000
+      PORT: $PORT
       API_TOKEN: ${API_TOKEN}
+
+  server-gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile_gpu    
+    
+    runtime: nvidia
+
+    ports:
+      - "$PORT:$PORT"
+
+    environment:
+      PORT: $PORT
+      API_TOKEN: ${API_TOKEN
