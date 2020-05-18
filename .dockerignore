@@ -1,0 +1,7 @@
+*
+
+!app/**
+!afy/**
+!test_images/**
+!requirements.txt
+!download_model.py

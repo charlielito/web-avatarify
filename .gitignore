@@ -1,3 +1,6 @@
+vox-adv-cpk.pth.tar
+fomm/
+static/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
