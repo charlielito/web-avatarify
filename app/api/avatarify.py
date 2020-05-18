@@ -24,7 +24,7 @@ model = PredictorLocal(
     checkpoint_path,
     relative=True,
     adapt_movement_scale=True,
-    device=os.getenv("DEVICE"),
+    # device=os.getenv("DEVICE"),
 )
 
 router = APIRouter()
@@ -69,7 +69,7 @@ def handle_image_request(image: types.Image):
     return image, image_bytes
 
 
-@router.post("/")
+@router.post("")
 def run_inference(
     request: Request,
     credentials: HTTPAuthorizationCredentials = security.http_credentials,
@@ -78,6 +78,7 @@ def run_inference(
     avatar = cv2.resize(avatar, model_input_size)
     if avatar.ndim == 2:
         avatar = np.tile(avatar[..., None], [1, 1, 3])
+
     model.set_source_image(avatar)
 
     video_bytes = base64.b64decode(request.video.content)

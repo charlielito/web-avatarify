@@ -3,6 +3,7 @@ import os
 import face_alignment
 import requests
 from tqdm import tqdm
+import torch
 
 
 def get_confirm_token(response):
@@ -44,5 +45,7 @@ if __name__ == "__main__":
     dst = "./vox-adv-cpk.pth.tar"
     download_file(document_id, dst)
     face_alignment.FaceAlignment(
-        face_alignment.LandmarksType._2D, flip_input=True, device=os.getenv("DEVICE")
+        face_alignment.LandmarksType._2D,
+        flip_input=True,
+        device="cuda" if torch.cuda.is_available() else "cpu",
     )

@@ -18,10 +18,11 @@ with PythonPath("."):
         get_frames_from_camera,
         write_video,
         read_fn,
+        bytes2video,
     )
 
 
-url = "http://localhost:8000"
+url = "http://localhost:8008"
 test_image_path = "avatars/einstein.jpg"
 
 # url = "http://3.133.146.72:8000"
@@ -65,3 +66,11 @@ response = requests.post(f"{url}/api/v1/avatarify", json=data, headers=headers)
 print(response, response.text)
 print(response.json())
 print(f"Elapsed:  {time.time()-init}")
+
+show_result = False
+if response.status_code == 200 and show_result:
+    response = response.json()
+    video_bytes = base64.b64decode(response["video"]["content"])
+    for frame in bytes2video(video_bytes):
+        cv2.imshow("Result", frame)
+        cv2.waitKey(200)
