@@ -11,6 +11,7 @@ import numpy as np
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
+from moviepy.editor import VideoClip
 from pydantic import BaseModel
 
 from afy.predictor_local import PredictorLocal
@@ -83,6 +84,9 @@ def run_inference(
 
     video_bytes = base64.b64decode(request.video.content)
     video_frames = list(io.bytes2video(video_bytes))
+    print(len(video_frames))
+
+    audio = io.get_audio_obj(video_bytes)
 
     output_frames = model_funs.generate_video(
         model,
@@ -93,8 +97,17 @@ def run_inference(
         model_input_size=model_input_size,
     )
 
+    fps = 30.0
+    video = VideoClip(
+        lambda t: output_frames[int(t * fps)], duration=len(video_frames) / fps
+    )
+    video = video.set_audio(audio.set_duration(video.duration))
+
     path = f"app/static/{uuid.uuid4().hex}.mp4"
-    io.write_video(path, output_frames)
+
+    video.write_videofile(path, fps=fps)
+    # io.write_video(path, output_frames)
+
     video_bytes = io.read_fn(path)
     result = base64.b64encode(video_bytes).decode()
 

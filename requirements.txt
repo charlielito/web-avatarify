@@ -19,3 +19,5 @@ websockets==8.1
 tensorflow-cpu
 python_path
 imageio-ffmpeg
+moviepy
+ffmpeg-python

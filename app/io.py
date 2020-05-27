@@ -1,12 +1,15 @@
+import os
+import tempfile
 from io import BytesIO
 
 import cv2
+import ffmpeg
 import imageio
 import numpy as np
 import PIL
-from skimage import img_as_ubyte
-
 import tensorflow as tf
+from moviepy.editor import AudioFileClip
+from skimage import img_as_ubyte
 
 
 def read_fn(filepath):
@@ -90,6 +93,24 @@ def write_video(video_path, video_frames, fps=30):
 
 
 def bytes2video(videobytes):
-    with imageio.get_reader(videobytes, "ffmpeg") as reader:
+    with imageio.get_reader(videobytes, "ffmpeg", fps=30) as reader:
         for image in reader:
             yield image
+
+
+def get_audio_obj(video_bytes):
+    with tempfile.TemporaryDirectory() as temp_dir:
+        tmp_video = os.path.join(temp_dir, "video.webm")
+        tmp_video_fixed = os.path.join(temp_dir, "video_fixed.webm")
+        with open(tmp_video, "wb") as f:
+            f.write(video_bytes)
+
+        input_ = ffmpeg.input(tmp_video)
+        out = ffmpeg.output(
+            input_, tmp_video_fixed, vcodec="copy", acodec="copy", fflags="+genpts"
+        )
+        ffmpeg.run(out)
+
+        audio = AudioFileClip(tmp_video_fixed)
+
+    return audio
