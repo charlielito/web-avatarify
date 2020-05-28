@@ -24,4 +24,4 @@ services:
 
     environment:
       PORT: $PORT
-      API_TOKEN: ${API_TOKEN
+      API_TOKEN: ${API_TOKEN}
