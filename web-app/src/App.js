@@ -1,10 +1,9 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import VideoCapture from './containers/VideoCapture/VideoCapture';
-import VideoCapture2 from './containers/VideoCapture/VideoCapture2';
+// import logo from './logo.svg';
+// import VideoCapture from './containers/VideoCapture/VideoCapture';
+// import VideoCapture2 from './containers/VideoCapture/VideoCapture2';
 
-import AvatarSelector from './containers/AvatarSelector/AvatarSelector';
 import AvatarBuilder from './containers/AvatarBuilder/AvatarBuilder';
 
 

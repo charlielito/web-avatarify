@@ -18,6 +18,7 @@
   transform: translateZ(0);
   -webkit-animation-delay: -0.16s;
   animation-delay: -0.16s;
+  z-index: 200;
 }
 .Loader:before,
 .Loader:after {

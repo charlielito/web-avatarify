@@ -1,70 +1,81 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Avatars from '../../components/Avatars/Avatars';
 import Webcam from "react-webcam";
-import axios from 'axios';
+import axios from '../../axios-avatarify';
+
+import Backdrop from '../../components/UI/Backdrop/Backdrop';
+import Spinner from '../../components/UI/Spinner/Spinner';
+
+
+
+import einstein from '../../assets/avatars/einstein.jpg'
+import jobs from '../../assets/avatars/jobs.jpg'
+import mona from '../../assets/avatars/mona.jpg'
+import obama from '../../assets/avatars/obama.jpg'
+import potter from '../../assets/avatars/potter.jpg'
+import ronaldo from '../../assets/avatars/ronaldo.png'
+import schwarzenegger from '../../assets/avatars/schwarzenegger.png'
+
+import { Button } from '@material-ui/core';
+
 
 const AVATARS_URLS = [
-    "https://www.charlielito.ml.s3.us-east-2.amazonaws.com/images/einstein.jpg",
-    "https://www.charlielito.ml.s3.us-east-2.amazonaws.com/images/jobs.jpg",
-    "https://www.charlielito.ml.s3.us-east-2.amazonaws.com/images/mona.jpg",
-    "https://www.charlielito.ml.s3.us-east-2.amazonaws.com/images/obama.jpg",
-    "https://www.charlielito.ml.s3.us-east-2.amazonaws.com/images/potter.jpg",
-    "https://www.charlielito.ml.s3.us-east-2.amazonaws.com/images/ronaldo.png",
-    "https://www.charlielito.ml.s3.us-east-2.amazonaws.com/images/schwarzenegger.png",
+    einstein,
+    jobs,
+    mona,
+    obama,
+    potter,
+    ronaldo,
+    schwarzenegger,
 ];
-var canvas = document.createElement("canvas");
-canvas.setAttribute('crossorigin', 'anonymous');
+
 
 
 const AvatarBuilder = props => {
+    const [avatarUrls, setAvatarUrls] = useState([
+        einstein,
+        jobs,
+        mona,
+        obama,
+        potter,
+        ronaldo,
+        schwarzenegger,
+    ]);
     const [avatarIdx, setAvatarIdx] = useState(0);
     const [avatarImage, setAvatarImage] = useState(null);
-
-    const webcamRef = useRef(null);
-    const mediaRecorderRef = useRef(null);
     const [capturing, setCapturing] = useState(false);
     const [recordedChunks, setRecordedChunks] = useState([]);
     const [recordedEncoded, setRecordedEncoded] = useState(null);
     const [resultVideoAvatar, setResultVideoAvatar] = useState(null);
+    const [loading, setLoading] = useState(false);
 
+    const webcamRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    // create avatarsRefArray only once
+    const avatarsRefArray = React.useMemo(() => avatarUrls.map(item => React.createRef()), []);
+
+    const getImageUrl = (idx) => {
+        const canvas = document.createElement("canvas");
+        const img = avatarsRefArray[idx].current;
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        return canvas.toDataURL("image/jpeg");
+    }
+
+    const avatarLoadedHandler = (idx) => {
+        if (idx === avatarIdx) {
+            const dataURL = getImageUrl(idx);
+            const base64image = dataURL.split(',')[1];
+            setAvatarImage(base64image);
+        }
+    }
     const updateAvatarIdxHandler = (idx) => {
+        const dataURL = getImageUrl(idx);
+        const base64image = dataURL.split(',')[1];
         setAvatarIdx(idx);
-        var img = document.getElementById(idx);
-
-        // canvas.width = img.width;
-        // canvas.height = img.height;
-        // var ctx = canvas.getContext("2d");
-        // ctx.drawImage(img, 0, 0);
-        // var dataURL = canvas.toDataURL("image/png");
-
-        var img = new Image();
-        img.src = AVATARS_URLS[idx];
-        var context = canvas.getContext('2d');
-        context.drawImage(img, 0, 0);
-        // var dataURL = canvas.toDataURL("image/png");
-        // var data = context.getImageData(x, y, 1, 1).data
-        // console.log(data);
-
-        // console.log(img);
-        // console.log(dataURL);
-        const config = {
-            // responseType: 'blob',
-            responseType: 'arraybuffer'
-        };
-        axios.get(AVATARS_URLS[idx], config)
-            .then(response => {
-                const base64img = new Buffer(response.data, 'binary').toString('base64');
-                console.log(response);
-                console.log(base64img);
-                setAvatarImage(base64img);
-            })
-
-        // return axios
-        //     .get(url, {
-        //       responseType: 'arraybuffer'
-        //     })
-        //     .then(response => new Buffer(response.data, 'binary').toString('base64'))
-        // }
+        setAvatarImage(base64image);
     }
 
 
@@ -98,28 +109,19 @@ const AvatarBuilder = props => {
 
     const handleDownload = useCallback(() => {
         if (recordedChunks.length) {
+            setLoading(true);
             const blob = new Blob(recordedChunks, {
                 type: "video/webm"
             });
-            // console.log(blob);
-            // const url = URL.createObjectURL(blob);
 
             var reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = function () {
                 var base64data = reader.result;
                 var rawBase64Data = base64data.split(',')[1];
-                // console.log(rawBase64Data);
-                // console.log(base64data);
+
                 setRecordedEncoded(base64data);
 
-                const config = {
-                    // responseType: 'blob',
-                    headers: {
-                        'Authorization': 'Bearer sisa',
-                        'Content-Type': 'application/json'
-                    }
-                };
                 const data = {
                     avatar: {
                         content: avatarImage
@@ -128,17 +130,23 @@ const AvatarBuilder = props => {
                         content: rawBase64Data
                     }
                 };
-                axios.post('http://localhost:8008/api/v1/avatarify', data, config)
-                    // axios.post('https://avatarify-ejf7gidppa-uc.a.run.app/api/v1/avatarify', data, config)
+                // console.log(avatarImage);
+                axios.post('api/v1/avatarify', data)
                     .then(response => {
-                        console.log(response);
-                        setResultVideoAvatar(response.data["video"]["content"]);
+                        // console.log(response);
+                        setResultVideoAvatar(response.data.video.content);
+                        setLoading(false);
+                    })
+                    .catch(error => {
+                        setLoading(false);
+                        alert('An error ocurred!' + error);
                     })
 
 
             }
             setRecordedChunks([]);
         }
+
     }, [recordedChunks]);
 
     let video = null;
@@ -162,24 +170,90 @@ const AvatarBuilder = props => {
         // facingMode: "user",
         frameRate: 30.0
     };
+
+    // React.useEffect(() => {
+    //     console.log(avatarsRefArray);
+    // }, [])
+
+    const addImageToUrls = (image) => {
+        const newAvatarUrls = [...avatarUrls];
+        newAvatarUrls.push(image);
+
+        // TODO: How to do thi better?
+        avatarsRefArray.push(React.createRef());
+
+        setAvatarUrls(newAvatarUrls);
+        setAvatarIdx(newAvatarUrls.length - 1);
+    }
+
+    const updateImageObject = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        if (file) {
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                addImageToUrls(reader.result);
+            };
+        }
+    }
+    const getStyleGanAvatar = () => {
+        setLoading(true);
+        axios.get('api/v1/getAvatar')
+            .then(response => {
+                const image = "data:image/jpg;base64," + response.data.avatar.content;
+                addImageToUrls(image);
+                setLoading(false);
+            })
+            .catch(error => {
+                setLoading(false);
+                alert('An error ocurred!' + error);
+            })
+    }
+    let spinner = null;
+    if (loading) {
+        spinner = (
+            <div>
+                <Spinner />
+            </div>
+        )
+    }
     return (
         <>
+            <Backdrop show={loading} />
+            {spinner}
             <Webcam audio={true} ref={webcamRef} videoConstraints={videoConstraints} />
+            <Button variant="contained" component='label'>
+                Upload Image
+                <input
+                    accept="image/jpeg"
+                    onChange={(e) => updateImageObject(e)}
+                    type="file"
+                    style={{ display: 'none' }}
+                />
+            </Button>
+            <Button variant="contained" component='label' onClick={getStyleGanAvatar}>
+                Get imaginary avatar
+            </Button>
             {capturing ? (
-                <button onClick={handleStopCaptureClick}>Stop Capture</button>
+                <Button variant="contained" onClick={handleStopCaptureClick}>Stop Capture</Button>
             ) : (
-                    <button onClick={handleStartCaptureClick}>Start Capture</button>
+                    <Button variant="contained" onClick={handleStartCaptureClick}>Start Capture</Button>
                 )}
             {recordedChunks.length > 0 && (
-                <button onClick={handleDownload}>Download</button>
+                <Button variant="contained" onClick={handleDownload}>Animate Avatar!</Button>
             )}
             {video}
             {avatarVideo}
             <Avatars
-                urlList={AVATARS_URLS}
+                urlList={avatarUrls}
+                ref={avatarsRefArray}
                 selectedAvatar={avatarIdx}
                 clickAvatar={updateAvatarIdxHandler}
+                onLoad={avatarLoadedHandler}
             />
+            {/* {userAvatar ? <img src={"data:image/jpg;base64," + userAvatar} /> : null} */}
+            {/* {avatarImage ? <img src={"data:image/jpg;base64," + avatarImage} /> : null} */}
         </>
     );
 
