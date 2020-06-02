@@ -1,13 +1,12 @@
 import React from 'react';
-import './Avatar.css';
-// import classes from './Avatar.css';
+import classes from './Avatar.module.css';
 // import Spinner from '../../UI/Spinner/Spinner'
 // import errorImage from '../../../assets/images/error.png'
 
 const Avatar = React.forwardRef((props, ref) => {
 
     return (
-        <li className="Avatar">
+        <li className={classes.Avatar}>
             <img
                 src={props.imageURL}
                 // src={src}
