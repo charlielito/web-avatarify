@@ -1,7 +1,8 @@
 import React from 'react';
-import classes from './Avatar.css';
-import Spinner from '../../UI/Spinner/Spinner'
-import errorImage from '../../../assets/images/error.png'
+import './Avatar.css';
+// import classes from './Avatar.css';
+// import Spinner from '../../UI/Spinner/Spinner'
+// import errorImage from '../../../assets/images/error.png'
 
 const Avatar = React.forwardRef((props, ref) => {
 

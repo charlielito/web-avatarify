@@ -19,17 +19,6 @@ import schwarzenegger from '../../assets/avatars/schwarzenegger.png'
 import { Button } from '@material-ui/core';
 
 
-const AVATARS_URLS = [
-    einstein,
-    jobs,
-    mona,
-    obama,
-    potter,
-    ronaldo,
-    schwarzenegger,
-];
-
-
 
 const AvatarBuilder = props => {
     const [avatarUrls, setAvatarUrls] = useState([
@@ -52,7 +41,7 @@ const AvatarBuilder = props => {
     const webcamRef = useRef(null);
     const mediaRecorderRef = useRef(null);
     // create avatarsRefArray only once
-    const avatarsRefArray = React.useMemo(() => avatarUrls.map(item => React.createRef()), []);
+    const avatarsRefArray = React.useMemo(() => avatarUrls.map(item => React.createRef()), [avatarUrls]);
 
     const getImageUrl = (idx) => {
         const canvas = document.createElement("canvas");
@@ -79,6 +68,16 @@ const AvatarBuilder = props => {
     }
 
 
+
+    const handleDataAvailable = useCallback(
+        ({ data }) => {
+            if (data.size > 0) {
+                setRecordedChunks((prev) => prev.concat(data));
+            }
+        },
+        [setRecordedChunks]
+    );
+
     const handleStartCaptureClick = useCallback(() => {
         setCapturing(true);
         setRecordedEncoded(null);
@@ -91,21 +90,12 @@ const AvatarBuilder = props => {
             handleDataAvailable
         );
         mediaRecorderRef.current.start();
-    }, [webcamRef, setCapturing, mediaRecorderRef]);
-
-    const handleDataAvailable = useCallback(
-        ({ data }) => {
-            if (data.size > 0) {
-                setRecordedChunks((prev) => prev.concat(data));
-            }
-        },
-        [setRecordedChunks]
-    );
+    }, [webcamRef, setCapturing, mediaRecorderRef, handleDataAvailable]);
 
     const handleStopCaptureClick = useCallback(() => {
         mediaRecorderRef.current.stop();
         setCapturing(false);
-    }, [mediaRecorderRef, webcamRef, setCapturing]);
+    }, [mediaRecorderRef, setCapturing]);
 
     const handleDownload = useCallback(() => {
         if (recordedChunks.length) {
@@ -147,7 +137,7 @@ const AvatarBuilder = props => {
             setRecordedChunks([]);
         }
 
-    }, [recordedChunks]);
+    }, [recordedChunks, avatarImage]);
 
     let video = null;
     if (recordedEncoded) {
