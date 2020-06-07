@@ -106,7 +106,7 @@ def run_inference(
     path = f"app/static/{uuid.uuid4().hex}.mp4"
 
     video.write_videofile(path, fps=fps)
-    
+
     # output_frames = video_frames
     # io.write_video(path, output_frames)
 
