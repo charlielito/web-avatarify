@@ -15,7 +15,7 @@ services:
   server-gpu:
     build:
       context: .
-      dockerfile: Dockerfile_gpu    
+      dockerfile: Dockerfile-gpu    
     
     runtime: nvidia
 
