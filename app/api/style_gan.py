@@ -28,7 +28,9 @@ def get_avatar(credentials: HTTPAuthorizationCredentials = security.http_credent
     r = requests.get(url, headers={"User-Agent": "My User Agent 1.0"}).content
 
     image = io.bytes2image(r)
-    print(image.shape)
+    image = cv2.resize(image, (512, 512))
+    r = io.image2bytes(image)
+    # print(image.shape)
 
     base64image = base64.b64encode(r)
     return Response(avatar=types.Image(content=base64image))
