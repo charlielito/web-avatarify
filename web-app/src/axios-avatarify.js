@@ -6,6 +6,7 @@ const tokenAuth = 'TxcbV6X7mMw7agE8mgvO3GxymZGUCLJa';
 // const url = 'http://api.liveportraits.ml';
 // const url = 'http://0.0.0.0:8008';
 const url = 'https://avatarify-relay-ejf7gidppa-uc.a.run.app/';
+
 const timeoutMinutes = 1;
 
 const instance = axios.create({
