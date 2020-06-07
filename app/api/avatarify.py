@@ -79,14 +79,12 @@ def run_inference(
     avatar = cv2.resize(avatar, model_input_size)
     if avatar.ndim == 2:
         avatar = np.tile(avatar[..., None], [1, 1, 3])
-    # print(avatar.shape)
-    # cv2.imshow("original", avatar)
-    # cv2.waitKey(1001)
+
     model.set_source_image(avatar)
 
     video_bytes = base64.b64decode(request.video.content)
     video_frames = list(io.bytes2video(video_bytes))
-    # print(len(video_frames))
+    print(len(video_frames))
 
     audio = io.get_audio_obj(video_bytes)
 
@@ -108,7 +106,7 @@ def run_inference(
     path = f"app/static/{uuid.uuid4().hex}.mp4"
 
     video.write_videofile(path, fps=fps)
-
+    
     # output_frames = video_frames
     # io.write_video(path, output_frames)
 
