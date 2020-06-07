@@ -11,7 +11,7 @@ node_modules/
 *.mp4
 *.mp3
 *.webm
-
+*.cache
 # C extensions
 *.so
 

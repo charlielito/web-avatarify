@@ -1,7 +1,17 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import avatarify, style_gan
+from .api import style_gan
+
+service = os.getenv("SERVICE")
+
+if service == "avatarify":
+    from .api import avatarify
+else:
+    from .api import avatarify_relay as avatarify
+
 
 app = FastAPI()
 
