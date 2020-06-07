@@ -16,8 +16,8 @@ RUN apt-get update && \
 RUN locale-gen en_US.UTF-8
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements-gpu.txt .
+RUN pip install -r requirements-gpu.txt
 
 RUN git clone https://github.com/alievk/first-order-model.git fomm
 RUN cd fomm && git checkout efbe0a6f17b38360ff9a446fddfbb3ce5493534c && cd ..
@@ -29,6 +29,5 @@ RUN python download_model.py
 COPY app ./app
 COPY afy ./afy
 RUN mkdir app/static
-
 
 CMD uvicorn app.server:app --port $PORT --workers 1 --host 0.0.0.0
