@@ -14,10 +14,16 @@ from fastapi.exceptions import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
-from app import io, model_funs, security, types
+from app import io, security, types
 
 router = APIRouter()
 server_url = os.getenv("SERVER_URL")
+api_token = os.getenv("API_TOKEN")
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {api_token}",
+}
 
 
 class Request(BaseModel):
@@ -36,7 +42,14 @@ def run_inference(
     request: Request,
     credentials: HTTPAuthorizationCredentials = security.http_credentials,
 ):
-    response = requests.post(server_url, data=request)
+    # print(request)
+    data = {
+        "avatar": {"content": request.avatar.content.decode()},
+        "video": {"content": request.video.content.decode()},
+        "merge": request.merge,
+        "axis": request.axis,
+    }
+    response = requests.post(server_url, json=data, headers=headers)
     if response.status_code != 200:
         raise HTTPException(response.status_code, response.text)
 

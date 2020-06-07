@@ -13,7 +13,7 @@ from fastapi.exceptions import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import requests
-from app import io, model_funs, security, types
+from app import io, security, types
 
 router = APIRouter()
 
