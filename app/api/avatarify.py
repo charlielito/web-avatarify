@@ -11,22 +11,10 @@ import numpy as np
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
-from moviepy.editor import VideoClip
 from pydantic import BaseModel
 
-from afy.predictor_local import PredictorLocal
 from app import io, model_funs, security, types
 
-config_path = "fomm/config/vox-adv-256.yaml"
-checkpoint_path = "vox-adv-cpk.pth.tar"
-model_input_size = (256, 256)
-model = PredictorLocal(
-    config_path,
-    checkpoint_path,
-    relative=True,
-    adapt_movement_scale=True,
-    # device=os.getenv("DEVICE"),
-)
 
 router = APIRouter()
 

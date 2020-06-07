@@ -27,5 +27,8 @@ def get_avatar(credentials: HTTPAuthorizationCredentials = security.http_credent
     url = "https://thispersondoesnotexist.com/image"
     r = requests.get(url, headers={"User-Agent": "My User Agent 1.0"}).content
 
+    image = io.bytes2image(r)
+    print(image.shape)
+
     base64image = base64.b64encode(r)
     return Response(avatar=types.Image(content=base64image))
