@@ -26,8 +26,8 @@ WORKDIR /code
 COPY download_model.py .
 RUN python download_model.py
 
-RUN mkdir app/static
 COPY app ./app
 COPY afy ./afy
+RUN mkdir app/static
 
 CMD uvicorn app.server:app --port $PORT --workers 1 --host 0.0.0.0

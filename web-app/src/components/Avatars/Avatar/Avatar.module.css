@@ -3,12 +3,11 @@
     margin-left: 10px;
     /* margin-right: 10px; */
     margin-top: 10px;
-    width: 30%;
+    width: 80%;
 }
 
 .Avatar img{
     height: 100%;
     width: 100%;
-    /* border: 10px solid blue; */
     box-sizing: border-box;
 }

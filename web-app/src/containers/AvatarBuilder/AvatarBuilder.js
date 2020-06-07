@@ -1,23 +1,19 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import Avatars from '../../components/Avatars/Avatars';
+import { Button, Typography, Container, Grid, Paper } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
+import React, { useCallback, useRef, useState } from 'react';
 import Webcam from "react-webcam";
+import einstein from '../../assets/avatars/einstein.jpg';
+import jobs from '../../assets/avatars/jobs.jpg';
+import mona from '../../assets/avatars/mona.jpg';
+import obama from '../../assets/avatars/obama.jpg';
+import potter from '../../assets/avatars/potter.jpg';
+import ronaldo from '../../assets/avatars/ronaldo.png';
+import schwarzenegger from '../../assets/avatars/schwarzenegger.png';
 import axios from '../../axios-avatarify';
-
+import Avatars from '../../components/Avatars/Avatars';
+import Landing from '../../components/Landing/Landing';
 import Backdrop from '../../components/UI/Backdrop/Backdrop';
 import Spinner from '../../components/UI/Spinner/Spinner';
-
-
-
-import einstein from '../../assets/avatars/einstein.jpg'
-import jobs from '../../assets/avatars/jobs.jpg'
-import mona from '../../assets/avatars/mona.jpg'
-import obama from '../../assets/avatars/obama.jpg'
-import potter from '../../assets/avatars/potter.jpg'
-import ronaldo from '../../assets/avatars/ronaldo.png'
-import schwarzenegger from '../../assets/avatars/schwarzenegger.png'
-
-import { Button } from '@material-ui/core';
-
 
 
 const AvatarBuilder = props => {
@@ -34,9 +30,12 @@ const AvatarBuilder = props => {
     const [avatarImage, setAvatarImage] = useState(null);
     const [capturing, setCapturing] = useState(false);
     const [recordedChunks, setRecordedChunks] = useState([]);
-    const [recordedEncoded, setRecordedEncoded] = useState(null);
     const [resultVideoAvatar, setResultVideoAvatar] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    const [buildAvatar, setBuildAvatar] = useState(false);
+
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const webcamRef = useRef(null);
     const mediaRecorderRef = useRef(null);
@@ -80,8 +79,8 @@ const AvatarBuilder = props => {
 
     const handleStartCaptureClick = useCallback(() => {
         setCapturing(true);
-        setRecordedEncoded(null);
         setResultVideoAvatar(null);
+        setRecordedChunks([]);
         mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
             mimeType: "video/webm"
         });
@@ -97,7 +96,7 @@ const AvatarBuilder = props => {
         setCapturing(false);
     }, [mediaRecorderRef, setCapturing]);
 
-    const handleDownload = useCallback(() => {
+    const handleAnimation = useCallback(() => {
         if (recordedChunks.length) {
             setLoading(true);
             const blob = new Blob(recordedChunks, {
@@ -109,8 +108,6 @@ const AvatarBuilder = props => {
             reader.onloadend = function () {
                 var base64data = reader.result;
                 var rawBase64Data = base64data.split(',')[1];
-
-                setRecordedEncoded(base64data);
 
                 const data = {
                     avatar: {
@@ -126,31 +123,21 @@ const AvatarBuilder = props => {
                         // console.log(response);
                         setResultVideoAvatar(response.data.video.content);
                         setLoading(false);
+                        setRecordedChunks([]);
                     })
                     .catch(error => {
                         setLoading(false);
-                        alert('An error ocurred!' + error);
+                        triggerErrorMsg(error);
                     })
-
-
             }
-            setRecordedChunks([]);
         }
 
     }, [recordedChunks, avatarImage]);
 
-    let video = null;
-    if (recordedEncoded) {
-        video = (
-            <video controls>
-                <source type="video/webm" src={recordedEncoded} />
-            </video>)
-    }
-
     let avatarVideo = null;
     if (resultVideoAvatar) {
         avatarVideo = (
-            <video controls>
+            <video autoPlay controls style={{ width: "80%", height: "80%" }}>
                 <source type="video/mp4" src={"data:video/mp4;base64," + resultVideoAvatar} />
             </video>)
     }
@@ -161,9 +148,6 @@ const AvatarBuilder = props => {
         frameRate: 30.0
     };
 
-    // React.useEffect(() => {
-    //     console.log(avatarsRefArray);
-    // }, [])
 
     const addImageToUrls = (image) => {
         const newAvatarUrls = [...avatarUrls];
@@ -197,53 +181,134 @@ const AvatarBuilder = props => {
             })
             .catch(error => {
                 setLoading(false);
-                alert('An error ocurred!' + error);
+                triggerErrorMsg(error);
+
             })
     }
-    let spinner = null;
-    if (loading) {
-        spinner = (
-            <div>
-                <Spinner />
-            </div>
-        )
+
+    const triggerErrorMsg = (error) => {
+        enqueueSnackbar('An error ocurred! ' + error, {
+            variant: 'error',
+            autoHideDuration: 4000,
+            anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'left',
+            },
+            onClose: (event, reason, key) => {
+                if (reason === 'clickaway') {
+                    closeSnackbar(key);
+                }
+            },
+            action: key => (
+                <Button
+                    style={{ color: 'white', 'border': '1px solid #952E18' }}
+                    size="small"
+                    onClick={() => closeSnackbar(key)}
+                >Got it
+                </Button>
+            ),
+        });
     }
+
+    let captureBtnText = "Start recording";
+    let captureBtnHandler = handleStartCaptureClick;
+    let captureBtnStyle = { backgroundColor: "green" }
+    if (capturing) {
+        captureBtnText = "Stop recording";
+        captureBtnHandler = handleStopCaptureClick;
+        captureBtnStyle = { backgroundColor: "salmon" }
+    }
+
+    const avatarBuilder = (
+        <>
+            <Backdrop show={loading}>
+                <Spinner />
+            </Backdrop>
+            <Container fixed style={{ 'marginTop': '10px' }} >
+                <Paper elevation={10}>
+                    <Typography variant="h5">Please Select an Image to become alive!</Typography>
+                </Paper>
+                <Avatars
+                    urlList={avatarUrls}
+                    ref={avatarsRefArray}
+                    selectedAvatar={avatarIdx}
+                    clickAvatar={updateAvatarIdxHandler}
+                    onLoad={avatarLoadedHandler}
+                />
+                <Grid container justify="center" spacing={2} style={{ 'marginTop': '10px', 'marginBottom': '10px' }}>
+                    <Grid item>
+                        <Button variant="contained" component='label' disabled={loading}>
+                            Upload Image
+                        <input
+                                accept="image/jpeg"
+                                onChange={(e) => updateImageObject(e)}
+                                type="file"
+                                style={{ display: 'none' }}
+                            />
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        <Button variant="contained" component='label' onClick={getStyleGanAvatar} disabled={loading}>
+                            Get imaginary person
+                    </Button>
+                    </Grid>
+                </Grid>
+            </Container>
+            <Container fixed style={{ 'marginTop': '10px', 'marginBottom': '10px' }}>
+                <Webcam
+                    audio={true}
+                    ref={webcamRef}
+                    videoConstraints={videoConstraints}
+                    style={{ width: "90%", height: "90%" }}
+                />
+                <Grid container justify="center" spacing={2} style={{ 'marginTop': '5px', 'marginBottom': '10px' }}>
+                    <Grid item>
+                        <Button
+                            variant="contained"
+                            onClick={captureBtnHandler}
+                            disabled={loading}
+                            style={captureBtnStyle}
+                        >{captureBtnText}</Button>
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            variant="contained"
+                            onClick={handleAnimation}
+                            disabled={!(recordedChunks.length > 0 && avatarImage)}
+                        >Animate Image!</Button>
+                    </Grid>
+                </Grid>
+                {avatarVideo}
+            </Container>
+        </>
+    )
+
+    const startAvatarBuilderHandler = () => {
+        setBuildAvatar(true);
+    }
+
+    const intro = (
+        <>
+            <Landing />
+            <Container fixed >
+                <Typography
+                    variant="body1"
+                    color="inherit"
+                    align="justify"
+                    style={{ 'marginTop': '10px', 'marginBottom': '10px' }}
+                >
+                    This page will allow you to record yourself from the webcamera and choose an image to animate!
+                </Typography>
+                <Button variant="contained" component='label' onClick={startAvatarBuilderHandler}>
+                    Start!
+                </Button>
+            </Container>
+        </>
+    )
+
     return (
         <>
-            <Backdrop show={loading} />
-            {spinner}
-            <Webcam audio={true} ref={webcamRef} videoConstraints={videoConstraints} />
-            <Button variant="contained" component='label'>
-                Upload Image
-                <input
-                    accept="image/jpeg"
-                    onChange={(e) => updateImageObject(e)}
-                    type="file"
-                    style={{ display: 'none' }}
-                />
-            </Button>
-            <Button variant="contained" component='label' onClick={getStyleGanAvatar}>
-                Get imaginary avatar
-            </Button>
-            {capturing ? (
-                <Button variant="contained" onClick={handleStopCaptureClick}>Stop Capture</Button>
-            ) : (
-                    <Button variant="contained" onClick={handleStartCaptureClick}>Start Capture</Button>
-                )}
-            {recordedChunks.length > 0 && (
-                <Button variant="contained" onClick={handleDownload}>Animate Avatar!</Button>
-            )}
-            {video}
-            {avatarVideo}
-            <Avatars
-                urlList={avatarUrls}
-                ref={avatarsRefArray}
-                selectedAvatar={avatarIdx}
-                clickAvatar={updateAvatarIdxHandler}
-                onLoad={avatarLoadedHandler}
-            />
-            {/* {userAvatar ? <img src={"data:image/jpg;base64," + userAvatar} /> : null} */}
-            {/* {avatarImage ? <img src={"data:image/jpg;base64," + avatarImage} /> : null} */}
+            {buildAvatar ? avatarBuilder : intro}
         </>
     );
 

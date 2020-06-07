@@ -79,34 +79,38 @@ def run_inference(
     avatar = cv2.resize(avatar, model_input_size)
     if avatar.ndim == 2:
         avatar = np.tile(avatar[..., None], [1, 1, 3])
-
+    print(avatar.shape)
+    # cv2.imshow("original", avatar)
+    # cv2.waitKey(1001)
     model.set_source_image(avatar)
 
     video_bytes = base64.b64decode(request.video.content)
     video_frames = list(io.bytes2video(video_bytes))
     print(len(video_frames))
 
-    audio = io.get_audio_obj(video_bytes)
+    # audio = io.get_audio_obj(video_bytes)
 
-    output_frames = model_funs.generate_video(
-        model,
-        video_frames,
-        merge=request.merge,
-        axis=request.axis,
-        verbose=True,
-        model_input_size=model_input_size,
-    )
+    # output_frames = model_funs.generate_video(
+    #     model,
+    #     video_frames,
+    #     merge=request.merge,
+    #     axis=request.axis,
+    #     verbose=True,
+    #     model_input_size=model_input_size,
+    # )
 
-    fps = 30.0
-    video = VideoClip(
-        lambda t: output_frames[int(t * fps)], duration=len(video_frames) / fps
-    )
-    video = video.set_audio(audio.set_duration(video.duration))
+    # fps = 30.0
+    # video = VideoClip(
+    #     lambda t: output_frames[int(t * fps)], duration=len(video_frames) / fps
+    # )
+    # video = video.set_audio(audio.set_duration(video.duration))
 
     path = f"app/static/{uuid.uuid4().hex}.mp4"
 
-    video.write_videofile(path, fps=fps)
-    # io.write_video(path, output_frames)
+    # video.write_videofile(path, fps=fps)
+
+    output_frames = video_frames
+    io.write_video(path, output_frames)
 
     video_bytes = io.read_fn(path)
     result = base64.b64encode(video_bytes).decode()

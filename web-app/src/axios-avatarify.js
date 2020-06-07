@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-const tokenAuth = 'sisa';
-const url = 'http://localhost:8008';
+const tokenAuth = 'TxcbV6X7mMw7agE8mgvO3GxymZGUCLJa';
+// const url = 'http://localhost:8008';
+// const url = 'http://18.219.77.246';
+const url = 'http://api.liveportraits.ml';
 const timeoutMinutes = 1;
-// const url = 'http://3.20.236.86:8008';
 
 const instance = axios.create({
     baseURL: url,
