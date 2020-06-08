@@ -62,15 +62,21 @@ def run_inference(
     request: types.Request,
     credentials: HTTPAuthorizationCredentials = security.http_credentials,
 ):
+    print("************ Getting avatar image...")
     avatar, _ = handle_image_request(request.avatar)
     avatar = cv2.resize(avatar, model_input_size)
     if avatar.ndim == 2:
         avatar = np.tile(avatar[..., None], [1, 1, 3])
+    print("************ Done!")
 
+    print("************* Setting avatar image to model ...")
     model.set_source_image(avatar)
+    print("************ Done!")
 
+    print("************* Getting video frames ...")
     video_bytes = base64.b64decode(request.video.content)
     video_frames = list(io.bytes2video(video_bytes, fps=request.fps))
+    print("************ Done!")
 
     # video_frames = video_frames[:5]
 
@@ -79,8 +85,11 @@ def run_inference(
 
     video_path = f"app/static/{video_name}.mp4"
 
+    print("************* Getting audio Object ...")
     audio = io.get_audio_obj(video_bytes)
+    print("************ Done!")
 
+    print("************* Getting transform video ...")
     output_frames = model_funs.generate_video(
         model,
         video_frames,
@@ -92,13 +101,20 @@ def run_inference(
         # relative=request.transferFace,
         relative=True,
     )
+    print("************ Done!")
 
+    print("************* Getting video in moviepy ...")
     video = VideoClip(
         lambda t: output_frames[int(t * request.fps)],
         duration=len(video_frames) / request.fps,
     )
-    video = video.set_audio(audio.set_duration(video.duration))
+    print("************ Done!")
 
+    print("************* Setting audio to video ...")
+    video = video.set_audio(audio.set_duration(video.duration))
+    print("************ Done!")
+
+    print("************* Saving and decoding video ...")
     video.write_videofile(video_path, fps=request.fps)
 
     # output_frames = video_frames
@@ -106,5 +122,6 @@ def run_inference(
 
     video_bytes = io.read_fn(video_path)
     result = base64.b64encode(video_bytes).decode()
+    print("************ Done!")
 
     return Response(video=types.Video(content=result))
