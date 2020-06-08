@@ -12,7 +12,6 @@ if service == "avatarify":
 else:
     from .api import avatarify_relay as avatarify
 
-print(f"------------------------ Loading service '{service}'")
 app = FastAPI()
 
 app.add_middleware(

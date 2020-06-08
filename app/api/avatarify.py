@@ -72,7 +72,7 @@ def run_inference(
     video_bytes = base64.b64decode(request.video.content)
     video_frames = list(io.bytes2video(video_bytes, fps=request.fps))
 
-    video_frames = video_frames[:5]
+    # video_frames = video_frames[:5]
 
     video_name = uuid.uuid4().hex
     io.write_fn(f"app/static/{video_name}_orig.webm", video_bytes)
@@ -80,7 +80,7 @@ def run_inference(
     video_path = f"app/static/{video_name}.mp4"
 
     audio = io.get_audio_obj(video_bytes)
-    print(request.merge, request.transferFace)
+
     output_frames = model_funs.generate_video(
         model,
         video_frames,
