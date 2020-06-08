@@ -238,25 +238,18 @@ const AvatarBuilder = props => {
         const video = webcamRef.current;
         const canvas = canvasRef.current;
         if (video && canvas) {
-            // console.log(video.getCanvas());
-
             var ctx = canvas.getContext('2d');
 
             canvas.width = video.video.videoWidth;
             canvas.height = video.video.videoHeight;
 
-            // video.video.srcObject = video.stream
-
-            // console.log(video, video.video.videoWidth);
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
             ctx.drawImage(video.video, 0, 0, canvas.width, canvas.height);
-            ctx.scale(-1, 1);
-            ctx.translate(-canvas.width, 0);
+
 
             var faceArea = 300;
             var pX = canvas.width / 2 - faceArea / 2;
             var pY = canvas.height / 2 - faceArea / 2;
+            // console.log(pX, pY)
 
             ctx.rect(pX, pY, faceArea, faceArea);
             ctx.lineWidth = "6";
@@ -284,6 +277,9 @@ const AvatarBuilder = props => {
                     clickAvatar={updateAvatarIdxHandler}
                     onLoad={avatarLoadedHandler}
                 />
+                <Typography variant="h6" style={{ 'marginTop': '10px' }}>
+                    ...or upload a custom image or generate a face by an AI
+                </Typography>
                 <Grid container justify="center" spacing={2} style={{ 'marginTop': '10px', 'marginBottom': '10px' }}>
                     <Grid item>
                         <Button variant="contained" component='label' disabled={loading}>
@@ -304,18 +300,20 @@ const AvatarBuilder = props => {
                 </Grid>
             </Container>
             <Container fixed style={{ 'marginTop': '10px', 'marginBottom': '10px' }}>
+                <Typography variant="h6" style={{ 'marginTop': '10px', 'marginBottom': '5px' }}>
+                    Please try to fit your face in the whole area for best results
+                </Typography>
                 <Webcam
                     audio={true}
                     ref={webcamRef}
                     videoConstraints={videoConstraints}
-                    mirrored
                     style={{
-                        width: "90%", height: "90%"
+                        width: "80%", height: "80%"
                     }}
                 />
-                {/* <canvas ref={canvasRef} style={{ width: "90%", height: "90%", zIndex: 10 }} /> */}
+                {/* <canvas ref={canvasRef} style={{ width: "90%", height: "90%", transform: 'scaleX(-1)' }} /> */}
                 <Grid container justify="center" spacing={2} style={{ 'marginTop': '5px', 'marginBottom': '0px' }}>
-                    <Grid item>
+                    {/* <Grid item>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -326,7 +324,7 @@ const AvatarBuilder = props => {
                             }
                             label="Transfer your face"
                         />
-                    </Grid>
+                    </Grid> */}
                     <Grid item>
                         <FormControlLabel
                             control={
