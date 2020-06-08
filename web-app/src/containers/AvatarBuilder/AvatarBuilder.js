@@ -1,4 +1,4 @@
-import { Button, Typography, Container, Grid, Paper } from '@material-ui/core';
+import { Button, Typography, Container, Grid, Paper, Checkbox, FormControlLabel } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useRef, useState } from 'react';
 import Webcam from "react-webcam";
@@ -15,6 +15,7 @@ import Landing from '../../components/Landing/Landing';
 import Backdrop from '../../components/UI/Backdrop/Backdrop';
 import Spinner from '../../components/UI/Spinner/Spinner';
 
+const FPS = 30.0;
 
 const AvatarBuilder = props => {
     const [avatarUrls, setAvatarUrls] = useState([
@@ -34,6 +35,15 @@ const AvatarBuilder = props => {
     const [loading, setLoading] = useState(false);
 
     const [buildAvatar, setBuildAvatar] = useState(false);
+
+    const [mergeInput, setMergeInput] = React.useState(false);
+    const mergeInputHandler = (event) => {
+        setMergeInput(event.target.checked);
+    };
+    const [transferFace, setTransferFace] = useState(false);
+    const transferFaceHandler = (event) => {
+        setTransferFace(event.target.checked);
+    };
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -115,7 +125,11 @@ const AvatarBuilder = props => {
                     },
                     video: {
                         content: rawBase64Data
-                    }
+                    },
+                    fps: FPS,
+                    merge: mergeInput,
+                    transferFace: transferFace,
+                    flip: true
                 };
                 // console.log(avatarImage);
                 axios.post('api/v1/avatarify', data)
@@ -145,7 +159,7 @@ const AvatarBuilder = props => {
         // width: 1280,
         // height: 720,
         // facingMode: "user",
-        frameRate: 30.0
+        frameRate: FPS
     };
 
 
@@ -219,6 +233,41 @@ const AvatarBuilder = props => {
         captureBtnStyle = { backgroundColor: "salmon" }
     }
 
+    const canvasRef = useRef(null);
+    function drawImge() {
+        const video = webcamRef.current;
+        const canvas = canvasRef.current;
+        if (video && canvas) {
+            // console.log(video.getCanvas());
+
+            var ctx = canvas.getContext('2d');
+
+            canvas.width = video.video.videoWidth;
+            canvas.height = video.video.videoHeight;
+
+            // video.video.srcObject = video.stream
+
+            // console.log(video, video.video.videoWidth);
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video.video, 0, 0, canvas.width, canvas.height);
+            ctx.scale(-1, 1);
+            ctx.translate(-canvas.width, 0);
+
+            var faceArea = 300;
+            var pX = canvas.width / 2 - faceArea / 2;
+            var pY = canvas.height / 2 - faceArea / 2;
+
+            ctx.rect(pX, pY, faceArea, faceArea);
+            ctx.lineWidth = "6";
+            ctx.strokeStyle = "red";
+            ctx.stroke();
+            setTimeout(drawImge, 1.0 / videoConstraints.frameRate);
+
+        }
+    }
+    // setTimeout(drawImge, 100);
+
     const avatarBuilder = (
         <>
             <Backdrop show={loading}>
@@ -259,8 +308,38 @@ const AvatarBuilder = props => {
                     audio={true}
                     ref={webcamRef}
                     videoConstraints={videoConstraints}
-                    style={{ width: "90%", height: "90%" }}
+                    mirrored
+                    style={{
+                        width: "90%", height: "90%"
+                    }}
                 />
+                {/* <canvas ref={canvasRef} style={{ width: "90%", height: "90%", zIndex: 10 }} /> */}
+                <Grid container justify="center" spacing={2} style={{ 'marginTop': '5px', 'marginBottom': '0px' }}>
+                    <Grid item>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={transferFace}
+                                    onChange={transferFaceHandler}
+                                    color="primary"
+                                />
+                            }
+                            label="Transfer your face"
+                        />
+                    </Grid>
+                    <Grid item>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={mergeInput}
+                                    onChange={mergeInputHandler}
+                                    color="primary"
+                                />
+                            }
+                            label="Show input video"
+                        />
+                    </Grid>
+                </Grid>
                 <Grid container justify="center" spacing={2} style={{ 'marginTop': '5px', 'marginBottom': '10px' }}>
                     <Grid item>
                         <Button
@@ -277,7 +356,9 @@ const AvatarBuilder = props => {
                             disabled={!(recordedChunks.length > 0 && avatarImage)}
                         >Animate Image!</Button>
                     </Grid>
+
                 </Grid>
+                {/* {webcamRef.current ? <canvas ref={webcamRef.current.getCanvas()} /> : null} */}
                 {avatarVideo}
             </Container>
         </>

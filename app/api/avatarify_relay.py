@@ -17,7 +17,9 @@ from pydantic import BaseModel
 from app import io, security, types
 
 router = APIRouter()
+
 server_url = os.getenv("SERVER_URL")
+server_url = f"{server_url}/api/v1/avatarify"
 api_token = os.getenv("API_TOKEN")
 
 headers = {
@@ -26,20 +28,13 @@ headers = {
 }
 
 
-class Request(BaseModel):
-    avatar: types.Image
-    video: types.Video
-    merge: bool = False
-    axis: int = 1
-
-
 class Response(BaseModel):
     video: types.Video
 
 
 @router.post("")
 def run_inference(
-    request: Request,
+    request: types.Request,
     credentials: HTTPAuthorizationCredentials = security.http_credentials,
 ):
     # print(request)
@@ -48,6 +43,9 @@ def run_inference(
         "video": {"content": request.video.content.decode()},
         "merge": request.merge,
         "axis": request.axis,
+        "fps": request.fps,
+        "transferFace": request.transferFace,
+        "flip": request.flip,
     }
     response = requests.post(server_url, json=data, headers=headers)
     if response.status_code != 200:

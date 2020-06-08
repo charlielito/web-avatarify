@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const tokenAuth = 'TxcbV6X7mMw7agE8mgvO3GxymZGUCLJa';
+const tokenAuth = process.env.REACT_APP_API_TOKEN;
 // const url = 'http://localhost:8008';
 // const url = 'http://18.219.77.246';
 // const url = 'http://api.liveportraits.ml';
-// const url = 'http://0.0.0.0:8008';
-const url = 'https://avatarify-relay-ejf7gidppa-uc.a.run.app/';
+const url = 'http://0.0.0.0:8008';
+// const url = 'https://avatarify-relay-ejf7gidppa-uc.a.run.app/';
 
 const timeoutMinutes = 1;
 

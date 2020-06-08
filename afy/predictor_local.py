@@ -21,13 +21,11 @@ class PredictorLocal:
         self,
         config_path,
         checkpoint_path,
-        relative=False,
         adapt_movement_scale=False,
         device=None,
         enc_downscale=1,
     ):
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        self.relative = relative
         self.adapt_movement_scale = adapt_movement_scale
         self.start_frame = None
         self.start_frame_kp = None
@@ -87,7 +85,7 @@ class PredictorLocal:
 
         self.generator.encode_source(source_enc)
 
-    def predict(self, driving_frame):
+    def predict(self, driving_frame, relative=False):
         with torch.no_grad():
             driving = to_tensor(driving_frame).to(self.device)
 
@@ -101,8 +99,8 @@ class PredictorLocal:
                 kp_source=self.kp_source,
                 kp_driving=kp_driving,
                 kp_driving_initial=self.kp_driving_initial,
-                use_relative_movement=self.relative,
-                use_relative_jacobian=self.relative,
+                use_relative_movement=relative,
+                use_relative_jacobian=relative,
                 adapt_movement_scale=self.adapt_movement_scale,
             )
 

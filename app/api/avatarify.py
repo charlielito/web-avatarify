@@ -20,22 +20,9 @@ from app import io, model_funs, security, types
 config_path = "fomm/config/vox-adv-256.yaml"
 checkpoint_path = "vox-adv-cpk.pth.tar"
 model_input_size = (256, 256)
-model = PredictorLocal(
-    config_path,
-    checkpoint_path,
-    relative=True,
-    adapt_movement_scale=True,
-    # device=os.getenv("DEVICE"),
-)
+model = PredictorLocal(config_path, checkpoint_path, adapt_movement_scale=True)
 
 router = APIRouter()
-
-
-class Request(BaseModel):
-    avatar: types.Image
-    video: types.Video
-    merge: bool = False
-    axis: int = 1
 
 
 class Response(BaseModel):
@@ -72,7 +59,7 @@ def handle_image_request(image: types.Image):
 
 @router.post("")
 def run_inference(
-    request: Request,
+    request: types.Request,
     credentials: HTTPAuthorizationCredentials = security.http_credentials,
 ):
     avatar, _ = handle_image_request(request.avatar)
@@ -83,11 +70,17 @@ def run_inference(
     model.set_source_image(avatar)
 
     video_bytes = base64.b64decode(request.video.content)
-    video_frames = list(io.bytes2video(video_bytes))
-    print(len(video_frames))
+    video_frames = list(io.bytes2video(video_bytes, fps=request.fps))
+
+    video_frames = video_frames[:5]
+
+    video_name = uuid.uuid4().hex
+    io.write_fn(f"app/static/{video_name}_orig.webm", video_bytes)
+
+    video_path = f"app/static/{video_name}.mp4"
 
     audio = io.get_audio_obj(video_bytes)
-
+    print(request.merge, request.transferFace)
     output_frames = model_funs.generate_video(
         model,
         video_frames,
@@ -95,22 +88,23 @@ def run_inference(
         axis=request.axis,
         verbose=True,
         model_input_size=model_input_size,
+        horizontal_flip=request.flip,
+        # relative=request.transferFace,
+        relative=True,
     )
 
-    fps = 30.0
     video = VideoClip(
-        lambda t: output_frames[int(t * fps)], duration=len(video_frames) / fps
+        lambda t: output_frames[int(t * request.fps)],
+        duration=len(video_frames) / request.fps,
     )
     video = video.set_audio(audio.set_duration(video.duration))
 
-    path = f"app/static/{uuid.uuid4().hex}.mp4"
-
-    video.write_videofile(path, fps=fps)
+    video.write_videofile(video_path, fps=request.fps)
 
     # output_frames = video_frames
-    # io.write_video(path, output_frames)
+    # io.write_video(video_path, output_frames)
 
-    video_bytes = io.read_fn(path)
+    video_bytes = io.read_fn(video_path)
     result = base64.b64encode(video_bytes).decode()
 
     return Response(video=types.Video(content=result))

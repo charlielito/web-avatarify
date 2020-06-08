@@ -8,7 +8,14 @@ with PythonPath("."):
 
 
 def generate_video(
-    model, video_frames, merge=False, axis=1, verbose=True, model_input_size=(256, 256)
+    model,
+    video_frames,
+    merge=False,
+    axis=1,
+    verbose=True,
+    horizontal_flip=False,
+    relative=False,
+    model_input_size=(256, 256),
 ):
     output = []
     stream_img_size = None
@@ -20,18 +27,20 @@ def generate_video(
         if stream_img_size is None:
             stream_img_size = frame.shape[1], frame.shape[0]
 
+        if horizontal_flip:
+            frame = cv2.flip(frame, 1)
+
         # input_frame, lrudwh = crop(
         #     frame, p=frame_proportion, offset_x=frame_offset_x, offset_y=frame_offset_y,
         # )
         input_frame = cv2.resize(frame, model_input_size)
 
-        out = model.predict(input_frame)
+        out = model.predict(input_frame, relative=relative)
         out = pad_img(out, stream_img_size)
         out = cv2.resize(out, stream_img_size)
 
-        output.append(out)
-
         if merge:
             out = np.concatenate([frame, out], axis=axis)
+        output.append(out)
 
     return output

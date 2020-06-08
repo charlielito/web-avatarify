@@ -25,7 +25,7 @@ fi
 # deploy built image
 #############################################################
 if $DEPLOY; then
-    ENV_VARS="API_TOKEN=${API_TOKEN},SERVER_URL=${SERVER_URL}"
+    ENV_VARS="API_TOKEN=${API_TOKEN},SERVER_URL=${SERVER_URL},SERVICE=${SERVICE}"
 
     
     gcloud run deploy \

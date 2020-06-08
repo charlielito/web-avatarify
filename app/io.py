@@ -12,6 +12,11 @@ from moviepy.editor import AudioFileClip
 from skimage import img_as_ubyte
 
 
+def write_fn(filepath, content, mode="wb"):
+    with tf.io.gfile.GFile(filepath, mode) as f:
+        f.write(content)
+
+
 def read_fn(filepath):
     with tf.io.gfile.GFile(filepath, "rb") as f:
         return f.read()
@@ -92,8 +97,8 @@ def write_video(video_path, video_frames, fps=30):
     )
 
 
-def bytes2video(videobytes):
-    with imageio.get_reader(videobytes, "ffmpeg", fps=30) as reader:
+def bytes2video(videobytes, fps=30):
+    with imageio.get_reader(videobytes, "ffmpeg", fps=fps) as reader:
         for image in reader:
             yield image
 
@@ -106,6 +111,8 @@ def get_audio_obj(video_bytes):
             f.write(video_bytes)
 
         input_ = ffmpeg.input(tmp_video)
+        # In order to get duration right, we need to use ffmpeg
+        # (videos got from web dont have duration well set)
         out = ffmpeg.output(
             input_, tmp_video_fixed, vcodec="copy", acodec="copy", fflags="+genpts"
         )

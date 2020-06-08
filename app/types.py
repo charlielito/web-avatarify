@@ -13,3 +13,13 @@ class Image(BaseModel):
 class Video(BaseModel):
     content: bytes = None
     # source: ImageSource = None
+
+
+class Request(BaseModel):
+    avatar: Image
+    video: Video
+    merge: bool = False
+    axis: int = 1
+    fps: float = 30.0
+    transferFace: bool = False
+    flip: bool = False

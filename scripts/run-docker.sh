@@ -1,15 +1,16 @@
 source scripts/env.sh
 source secrets.sh
 
-SERVICE="server"
+DOCKER_SERVICE="server"
 for var in "$@"; do
     if [ $var == "--gpu" ]; then
-        SERVICE="server-gpu"
+        DOCKER_SERVICE="server-gpu"
         export PORT=80
+        export SERVICE="avatarify"
     fi
 done
 
-docker-compose build $SERVICE
-docker-compose up $SERVICE
+docker-compose build $DOCKER_SERVICE
+docker-compose up $DOCKER_SERVICE
 
 
