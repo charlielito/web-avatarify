@@ -4,4 +4,5 @@
 !afy/**
 !test_images/**
 !requirements.txt
+!requirements-gpu.txt
 !download_model.py
