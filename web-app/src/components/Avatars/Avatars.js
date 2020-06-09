@@ -30,7 +30,7 @@ const Avatars = React.forwardRef((props, ref) => {
     }) : null;
 
     return (
-        <GridList cellHeight={"auto"} className={classes.gridList} cols={4}>
+        <GridList cellHeight={"auto"} className={classes.gridList} cols={5}>
             {urlList}
         </GridList>
     )

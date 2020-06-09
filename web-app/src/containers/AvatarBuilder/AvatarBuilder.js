@@ -1,4 +1,4 @@
-import { Button, Typography, Container, Grid, Paper, Checkbox, FormControlLabel } from '@material-ui/core';
+import { Button, Checkbox, Container, FormControlLabel, Grid, Paper, Typography } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useRef, useState } from 'react';
 import Webcam from "react-webcam";
@@ -8,7 +8,10 @@ import mona from '../../assets/avatars/mona.jpg';
 import obama from '../../assets/avatars/obama.jpg';
 import potter from '../../assets/avatars/potter.jpg';
 import ronaldo from '../../assets/avatars/ronaldo.png';
-import schwarzenegger from '../../assets/avatars/schwarzenegger.png';
+import jonsnow from '../../assets/avatars/jonsnow.png';
+import dani from '../../assets/avatars/dani.png';
+import it from '../../assets/avatars/it.png';
+import nightking from '../../assets/avatars/nightking.png';
 import axios from '../../axios-avatarify';
 import Avatars from '../../components/Avatars/Avatars';
 import Landing from '../../components/Landing/Landing';
@@ -26,7 +29,10 @@ const AvatarBuilder = props => {
         obama,
         potter,
         ronaldo,
-        schwarzenegger,
+        jonsnow,
+        dani,
+        it,
+        nightking
     ]);
     const [avatarIdx, setAvatarIdx] = useState(0);
     const [avatarImage, setAvatarImage] = useState(null);
