@@ -114,6 +114,11 @@ def run_inference(
     video = VideoClip(gen_video, duration=len(output_frames) / request.fps,)
     print("************ Done!")
 
+    # Calculate min duration between audio and video (for some odd reason may differ)
+    final_duration = min(video.duration, audio.duration)
+    video = video.set_duration(final_duration)
+    audio = audio.set_duration(final_duration)
+
     print("************* Setting audio to video ...")
     video = video.set_audio(audio.set_duration(video.duration))
     print("************ Done!")
