@@ -163,4 +163,8 @@ class PredictorLocal:
 
         output_length = self.get_max_length((x1, y1, x2, y2))
 
+        # make it even
+        if output_length % 2 != 0:
+            output_length -= 1
+
         return (x1, y1, x1 + output_length, y1 + output_length)

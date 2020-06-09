@@ -107,10 +107,11 @@ def run_inference(
     print("************ Done!")
 
     print("************* Getting video in moviepy ...")
-    video = VideoClip(
-        lambda t: output_frames[int(t * request.fps)],
-        duration=len(video_frames) / request.fps,
-    )
+
+    def gen_video(t):
+        return output_frames[min(int(t * request.fps), len(output_frames) - 1)]
+
+    video = VideoClip(gen_video, duration=len(output_frames) / request.fps,)
     print("************ Done!")
 
     print("************* Setting audio to video ...")
