@@ -17,6 +17,13 @@ def write_fn(filepath, content, mode="wb"):
         f.write(content)
 
 
+def get_video_meta_data(filepath):
+    video_bytes = read_fn(filepath)
+
+    with imageio.get_reader(video_bytes, "ffmpeg") as reader:
+        return reader.get_meta_data()
+
+
 def read_fn(filepath):
     with tf.io.gfile.GFile(filepath, "rb") as f:
         return f.read()
@@ -104,9 +111,16 @@ def bytes2video(videobytes, fps=30):
 
 
 def get_audio_obj(video_bytes):
+
+    with imageio.get_reader(video_bytes, "ffmpeg") as reader:
+        metadata = reader.get_meta_data()
+
+    codec = metadata["codec"]
+    extension = ".mkv" if "h264" in codec else ".webm"
+
     with tempfile.TemporaryDirectory() as temp_dir:
-        tmp_video = os.path.join(temp_dir, "video.webm")
-        tmp_video_fixed = os.path.join(temp_dir, "video_fixed.webm")
+        tmp_video = os.path.join(temp_dir, f"video{extension}")
+        tmp_video_fixed = os.path.join(temp_dir, f"video_fixed{extension}")
         with open(tmp_video, "wb") as f:
             f.write(video_bytes)
 

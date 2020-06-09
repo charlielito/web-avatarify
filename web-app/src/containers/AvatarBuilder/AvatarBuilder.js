@@ -40,7 +40,7 @@ const AvatarBuilder = props => {
     const mergeInputHandler = (event) => {
         setMergeInput(event.target.checked);
     };
-    const [transferFace, setTransferFace] = useState(false);
+    const [transferFace, setTransferFace] = useState(true);
     const transferFaceHandler = (event) => {
         setTransferFace(event.target.checked);
     };
