@@ -301,7 +301,7 @@ const AvatarBuilder = props => {
             </Container>
             <Container fixed style={{ 'marginTop': '10px', 'marginBottom': '10px' }}>
                 <Typography variant="h6" style={{ 'marginTop': '10px', 'marginBottom': '5px' }}>
-                    Please try to fit your face in the whole area for best results
+                    Now record yourself to transfer the motion to the image
                 </Typography>
                 <Webcam
                     audio={true}
@@ -335,7 +335,7 @@ const AvatarBuilder = props => {
                                     color="primary"
                                 />
                             }
-                            label="Show input video"
+                            label="Show input video after animation"
                         />
                     </Grid>
                 </Grid>
