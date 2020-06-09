@@ -16,7 +16,8 @@ import Backdrop from '../../components/UI/Backdrop/Backdrop';
 import Spinner from '../../components/UI/Spinner/Spinner';
 
 const FPS = 30.0;
-
+const AUTO_STOP_TIMEOUT = 8000;
+const MAX_WIDTH = 'sm'
 const AvatarBuilder = props => {
     const [avatarUrls, setAvatarUrls] = useState([
         einstein,
@@ -76,8 +77,6 @@ const AvatarBuilder = props => {
         setAvatarImage(base64image);
     }
 
-
-
     const handleDataAvailable = useCallback(
         ({ data }) => {
             if (data.size > 0) {
@@ -91,6 +90,16 @@ const AvatarBuilder = props => {
         setCapturing(true);
         setResultVideoAvatar(null);
         setRecordedChunks([]);
+
+        // Set timeout of X seconds to constrain maximum video duration
+        setTimeout(() => {
+            const recordingState = mediaRecorderRef.current.state;
+            if (recordingState === 'recording') {
+                handleStopCaptureClick();
+                triggerPopUpMsg(`Maximum record time of ${AUTO_STOP_TIMEOUT / 1000} seconds reached!`, 'warning');
+            }
+        }, AUTO_STOP_TIMEOUT)
+
         mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
             mimeType: "video/webm"
         });
@@ -141,7 +150,7 @@ const AvatarBuilder = props => {
                     })
                     .catch(error => {
                         setLoading(false);
-                        triggerErrorMsg(error);
+                        triggerPopUpMsg('An error ocurred! ' + error, 'error');
                     })
             }
         }
@@ -195,14 +204,14 @@ const AvatarBuilder = props => {
             })
             .catch(error => {
                 setLoading(false);
-                triggerErrorMsg(error);
+                triggerPopUpMsg('An error ocurred! ' + error, 'error');
 
             })
     }
 
-    const triggerErrorMsg = (error) => {
-        enqueueSnackbar('An error ocurred! ' + error, {
-            variant: 'error',
+    const triggerPopUpMsg = (msg, type) => {
+        enqueueSnackbar(msg, {
+            variant: type,
             autoHideDuration: 4000,
             anchorOrigin: {
                 vertical: 'top',
@@ -233,40 +242,12 @@ const AvatarBuilder = props => {
         captureBtnStyle = { backgroundColor: "salmon" }
     }
 
-    const canvasRef = useRef(null);
-    function drawImge() {
-        const video = webcamRef.current;
-        const canvas = canvasRef.current;
-        if (video && canvas) {
-            var ctx = canvas.getContext('2d');
-
-            canvas.width = video.video.videoWidth;
-            canvas.height = video.video.videoHeight;
-
-            ctx.drawImage(video.video, 0, 0, canvas.width, canvas.height);
-
-
-            var faceArea = 300;
-            var pX = canvas.width / 2 - faceArea / 2;
-            var pY = canvas.height / 2 - faceArea / 2;
-            // console.log(pX, pY)
-
-            ctx.rect(pX, pY, faceArea, faceArea);
-            ctx.lineWidth = "6";
-            ctx.strokeStyle = "red";
-            ctx.stroke();
-            setTimeout(drawImge, 1.0 / videoConstraints.frameRate);
-
-        }
-    }
-    // setTimeout(drawImge, 100);
-
     const avatarBuilder = (
         <>
             <Backdrop show={loading}>
                 <Spinner />
             </Backdrop>
-            <Container fixed style={{ 'marginTop': '10px' }} >
+            <Container fixed style={{ 'marginTop': '10px' }} maxWidth={MAX_WIDTH}>
                 <Paper elevation={10}>
                     <Typography variant="h5">Please Select an Image to become alive!</Typography>
                 </Paper>
@@ -299,7 +280,7 @@ const AvatarBuilder = props => {
                     </Grid>
                 </Grid>
             </Container>
-            <Container fixed style={{ 'marginTop': '10px', 'marginBottom': '10px' }}>
+            <Container fixed style={{ 'marginTop': '10px', 'marginBottom': '10px' }} maxWidth={MAX_WIDTH}>
                 <Typography variant="h6" style={{ 'marginTop': '10px', 'marginBottom': '5px' }}>
                     Now record yourself to transfer the motion to the image
                 </Typography>
@@ -312,7 +293,6 @@ const AvatarBuilder = props => {
                         width: "80%", height: "80%"
                     }}
                 />
-                {/* <canvas ref={canvasRef} style={{ width: "90%", height: "90%", transform: 'scaleX(-1)' }} /> */}
                 <Grid container justify="center" spacing={2} style={{ 'marginTop': '5px', 'marginBottom': '0px' }}>
                     {/* <Grid item>
                         <FormControlLabel
@@ -357,7 +337,6 @@ const AvatarBuilder = props => {
                     </Grid>
 
                 </Grid>
-                {/* {webcamRef.current ? <canvas ref={webcamRef.current.getCanvas()} /> : null} */}
                 {avatarVideo}
             </Container>
         </>
@@ -369,8 +348,8 @@ const AvatarBuilder = props => {
 
     const intro = (
         <>
-            <Landing />
-            <Container fixed >
+            <Container fixed maxWidth={MAX_WIDTH}>
+                <Landing />
                 <Typography
                     variant="body1"
                     color="inherit"

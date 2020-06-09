@@ -4,9 +4,9 @@ import { AppBar, Typography, Toolbar } from '@material-ui/core';
 export default function ToolBar(props) {
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" style={{ alignItems: 'center' }}>
             <Toolbar>
-                <Typography variant="h6" color="inherit">
+                <Typography variant="h5" color="inherit" align="center">
                     Image live animations!
                 </Typography>
             </Toolbar>
