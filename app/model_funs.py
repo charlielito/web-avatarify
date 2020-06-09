@@ -16,6 +16,7 @@ def generate_video(
     horizontal_flip=False,
     relative=False,
     model_input_size=(256, 256),
+    crop_bbox=[],
 ):
     output = []
     stream_img_size = None
@@ -24,11 +25,15 @@ def generate_video(
     )
     for frame in video_frames:
 
-        if stream_img_size is None:
-            stream_img_size = frame.shape[1], frame.shape[0]
+        if crop_bbox:
+            x1, y1, x2, y2 = crop_bbox
+            frame = frame[y1:y2, x1:x2]
 
         if horizontal_flip:
             frame = cv2.flip(frame, 1)
+
+        if stream_img_size is None:
+            stream_img_size = frame.shape[1], frame.shape[0]
 
         # input_frame, lrudwh = crop(
         #     frame, p=frame_proportion, offset_x=frame_offset_x, offset_y=frame_offset_y,

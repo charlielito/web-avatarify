@@ -307,6 +307,7 @@ const AvatarBuilder = props => {
                     audio={true}
                     ref={webcamRef}
                     videoConstraints={videoConstraints}
+                    mirrored
                     style={{
                         width: "80%", height: "80%"
                     }}

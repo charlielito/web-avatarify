@@ -135,3 +135,32 @@ class PredictorLocal:
 
     def get_start_frame_kp(self):
         return self.start_frame_kp
+
+    @staticmethod
+    def get_max_length(bbox):
+        x1, y1, x2, y2 = bbox
+        w = x2 - x1
+        h = y2 - y1
+        square_length = max(w, h)
+        return square_length
+
+    def get_face_bbox(self, image, growth_factor=0.4):
+        bboxes = self.fa.face_detector.detect_from_image(image)
+        if not bboxes:
+            return []
+
+        img_h, img_w = image.shape[:2]
+
+        bbox = list(map(int, bboxes[0]))
+        x1, y1, x2, y2, score = bbox
+        square_length = self.get_max_length((x1, y1, x2, y2))
+        dlength = int(growth_factor * square_length)
+
+        x1 = max(0, x1 - dlength)
+        y1 = max(0, y1 - dlength)
+        x2 = min(img_w - 1, x2 + dlength)
+        y2 = min(img_h - 1, y2 + int(dlength * 0.5))
+
+        output_length = self.get_max_length((x1, y1, x2, y2))
+
+        return (x1, y1, x1 + output_length, y1 + output_length)

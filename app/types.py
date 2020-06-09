@@ -21,5 +21,5 @@ class Request(BaseModel):
     merge: bool = False
     axis: int = 1
     fps: float = 30.0
-    transferFace: bool = False
+    transferFace: bool = True
     flip: bool = False
