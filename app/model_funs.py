@@ -48,4 +48,6 @@ def generate_video(
             out = np.concatenate([frame, out], axis=axis)
         output.append(out)
 
+    print(out.shape)
+
     return output
