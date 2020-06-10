@@ -10,7 +10,7 @@ const Avatar = React.forwardRef((props, ref) => {
             src={props.imageURL}
             // src={src}
             onClick={props.clicked}
-            style={props.selected ? { border: "thick solid blue" } : null}
+            style={props.selected ? { border: "thick solid #1274BD" } : null}
             // loader={<Spinner />}
             // unloader={<img alt="" src={errorImage} />}
             id={props.id}

@@ -241,11 +241,11 @@ const AvatarBuilder = props => {
 
     let captureBtnText = "Start recording";
     let captureBtnHandler = handleStartCaptureClick;
-    let captureBtnStyle = { backgroundColor: "green" }
+    let captureBtnStyle = { backgroundColor: "#1274BD" }
     if (capturing) {
         captureBtnText = "Stop recording";
         captureBtnHandler = handleStopCaptureClick;
-        captureBtnStyle = { backgroundColor: "salmon" }
+        captureBtnStyle = { backgroundColor: "#9B1014" }
     }
 
     const avatarBuilder = (
@@ -254,7 +254,7 @@ const AvatarBuilder = props => {
                 <Spinner />
             </Backdrop>
             <Container fixed style={{ 'marginTop': '10px' }} maxWidth={MAX_WIDTH}>
-                <Paper elevation={10}>
+                <Paper elevation={5} style={{ backgroundColor: '#F5F5F5', marginBottom: '10px' }}>
                     <Typography variant="h5">Please Select an Image to become alive!</Typography>
                 </Paper>
                 <Avatars
@@ -265,7 +265,7 @@ const AvatarBuilder = props => {
                     onLoad={avatarLoadedHandler}
                 />
                 <Typography variant="h6" style={{ 'marginTop': '10px' }}>
-                    ...or upload a custom image or generate a face by an AI
+                    ...or upload a custom image/generate a face by an AI
                 </Typography>
                 <Grid container justify="center" spacing={2} style={{ 'marginTop': '10px', 'marginBottom': '10px' }}>
                     <Grid item>
@@ -287,8 +287,8 @@ const AvatarBuilder = props => {
                 </Grid>
             </Container>
             <Container fixed style={{ 'marginTop': '10px', 'marginBottom': '10px' }} maxWidth={MAX_WIDTH}>
-                <Typography variant="h6" style={{ 'marginTop': '10px', 'marginBottom': '5px' }}>
-                    Now record yourself to transfer the motion to the image
+                <Typography variant="h6" style={{ 'marginTop': '10px', 'marginBottom': '10px' }}>
+                    Record yourself to transfer the motion to the image
                 </Typography>
                 <Webcam
                     audio={true}
@@ -325,7 +325,7 @@ const AvatarBuilder = props => {
                         />
                     </Grid>
                 </Grid>
-                <Grid container justify="center" spacing={2} style={{ 'marginTop': '5px', 'marginBottom': '10px' }}>
+                <Grid container justify="center" spacing={2} style={{ 'marginTop': '0px', 'marginBottom': '10px' }}>
                     <Grid item>
                         <Button
                             variant="contained"
@@ -338,7 +338,7 @@ const AvatarBuilder = props => {
                         <Button
                             variant="contained"
                             onClick={handleAnimation}
-                            disabled={!(recordedChunks.length > 0 && avatarImage)}
+                            disabled={!(recordedChunks.length > 0 && avatarImage) || loading}
                         >Animate Image!</Button>
                     </Grid>
 
@@ -356,14 +356,6 @@ const AvatarBuilder = props => {
         <>
             <Container fixed maxWidth={MAX_WIDTH}>
                 <Landing />
-                <Typography
-                    variant="body1"
-                    color="inherit"
-                    align="justify"
-                    style={{ 'marginTop': '10px', 'marginBottom': '10px' }}
-                >
-                    This page will allow you to record yourself from the webcamera and choose an image to animate!
-                </Typography>
                 <Button variant="contained" component='label' onClick={startAvatarBuilderHandler}>
                     Start!
                 </Button>
