@@ -1,7 +1,7 @@
 .Avatar {
     float: left; 
     margin-left: 10px;
-    /* margin-right: 10px; */
+    margin-right: 10px;
     margin-top: 10px;
     width: 80%;
 }
@@ -10,4 +10,25 @@
     height: 100%;
     width: 100%;
     box-sizing: border-box;
+}
+
+.AvatarSelected {
+    border: thick solid #1274BD
+}
+
+@media (max-width: 600px) {
+    .AvatarSelected {
+        height: 77%;
+        width: 70%;
+        border: medium solid #1274BD
+
+    }
+}
+@media (max-width: 450px) {
+    .AvatarSelected {
+        height: 70%;
+        width: 70%;
+        border: medium solid #1274BD
+
+    }
 }

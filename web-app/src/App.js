@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 // import logo from './logo.svg';
 // import VideoCapture from './containers/VideoCapture/VideoCapture';
-import { Paper, Container, Typography } from '@material-ui/core/';
+import { Paper, Container } from '@material-ui/core/';
 import AvatarBuilder from './containers/AvatarBuilder/AvatarBuilder';
 import Toolbar from './components/Toolbar/Toolbar';
 import Contact from './components/UI/Contact/Contact';
