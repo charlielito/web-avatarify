@@ -1,6 +1,6 @@
 import React from 'react';
 import example from '../../assets/example.gif';
-import { Typography, Container, Box, Grid } from '@material-ui/core';
+import { Typography, Container, Grid } from '@material-ui/core';
 import classes from './Landing.module.css';
 
 

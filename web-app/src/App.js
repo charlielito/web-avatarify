@@ -5,6 +5,7 @@ import './App.css';
 import { Paper, Container, Typography } from '@material-ui/core/';
 import AvatarBuilder from './containers/AvatarBuilder/AvatarBuilder';
 import Toolbar from './components/Toolbar/Toolbar';
+import Contact from './components/UI/Contact/Contact';
 
 
 function App() {
@@ -19,9 +20,7 @@ function App() {
           <AvatarBuilder />
         </Paper>
       </Container>
-      <Typography variant="body2">
-        © 2020 <a rel="author" href="https://github.com/charlielito">Carlos Alvarez</a>
-      </Typography>
+      <Contact />
     </div>
   );
 }
