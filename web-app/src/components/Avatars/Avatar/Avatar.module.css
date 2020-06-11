@@ -18,17 +18,13 @@
 
 @media (max-width: 600px) {
     .AvatarSelected {
-        height: 77%;
+        height: 75%;
         width: 70%;
-        border: medium solid #1274BD
-
     }
 }
 @media (max-width: 450px) {
     .AvatarSelected {
         height: 70%;
         width: 70%;
-        border: medium solid #1274BD
-
     }
 }

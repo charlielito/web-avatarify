@@ -321,7 +321,7 @@ const AvatarBuilder = props => {
                                     color="primary"
                                 />
                             }
-                            label="Show input video after animation"
+                            label="Show input video with animation"
                         />
                     </Grid>
                 </Grid>

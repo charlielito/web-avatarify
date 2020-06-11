@@ -135,3 +135,61 @@ def get_audio_obj(video_bytes):
         audio = AudioFileClip(tmp_video_fixed)
 
     return audio
+
+
+def overlay(
+    background: np.ndarray, overlay, x: int, y: int,
+):
+    mask = overlay[..., 3]
+    overlay = overlay[..., :3]
+
+    background_width = background.shape[1]
+    background_height = background.shape[0]
+
+    h, w = overlay.shape[0], overlay.shape[1]
+
+    if x >= background_width or y >= background_height or x + w <= 0 or y + h <= 0:
+        return background[..., :3]
+
+    if x < 0:
+        w = w + x
+        x = 0
+        overlay = overlay[:, -w:]
+        mask = mask[:, -w:]
+
+    if y < 0:
+        h = h + y
+        y = 0
+        overlay = overlay[-h:]
+        mask = mask[-h:]
+
+    if x + w > background_width:
+        w = background_width - x
+        overlay = overlay[:, :w]
+        mask = mask[:, :w]
+
+    if y + h > background_height:
+        h = background_height - y
+        overlay = overlay[:h]
+        mask = mask[:h]
+
+    if mask.ndim < background.ndim:
+        mask = np.expand_dims(mask, axis=-1)
+
+    if overlay.ndim < background.ndim:
+        overlay = np.expand_dims(overlay, axis=-1)
+
+    if background.ndim > 2 and background.shape[2] > 3:
+        background = background[..., :3]
+
+    background_mask = background[y : y + h, x : x + w]
+
+    mask = mask / 255.0
+    background_render = (1.0 - mask) * background_mask + mask * overlay
+
+    background_render = background_render.astype(np.int32)
+    background_render = np.clip(background_render, 0, 255).astype(np.uint8)
+
+    background[y : y + h, x : x + w] = background_render
+
+    return background

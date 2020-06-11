@@ -6,6 +6,8 @@ from tqdm import tqdm
 with PythonPath("."):
     from afy.utils import crop, pad_img
 
+from . import io
+
 
 def generate_video(
     model,
@@ -17,12 +19,18 @@ def generate_video(
     relative=False,
     model_input_size=(256, 256),
     crop_bbox=[],
+    watermark="app/watermark.png",
 ):
     output = []
     stream_img_size = None
     video_frames = (
         tqdm(video_frames, total=len(video_frames)) if verbose else video_frames
     )
+
+    # load watermark image
+    if watermark is not None:
+        watermark = io.read_image(watermark)
+
     for frame in video_frames:
 
         if crop_bbox:
@@ -46,6 +54,25 @@ def generate_video(
 
         if merge:
             out = np.concatenate([frame, out], axis=axis)
+
+        if watermark is not None:
+            # Add watermark
+            out_h, out_w = out.shape[:2]
+            wm_h, wm_w = watermark.shape[:2]
+
+            final_h = out_h * 0.2
+            final_watermark = cv2.resize(
+                watermark, fx=final_h / wm_h, fy=final_h / wm_h, dsize=None
+            )
+            x = out_w - int(final_h / wm_h * wm_w)
+            y = out_h - int(final_h)
+
+            # put watermark in center
+            if merge:
+                x = out_w // 2 - int(final_h / wm_h * wm_w) // 2
+
+            out = io.overlay(out, final_watermark, x, y)
+
         output.append(out)
 
     print(out.shape)
