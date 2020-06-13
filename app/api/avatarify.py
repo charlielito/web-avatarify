@@ -78,7 +78,7 @@ def run_inference(
     video_frames = list(io.bytes2video(video_bytes, fps=request.fps))
     print("************ Done!")
 
-    video_frames = video_frames[:5]
+    # video_frames = video_frames[:5]
 
     video_name = uuid.uuid4().hex
     io.write_fn(f"app/static/{video_name}_orig.webm", video_bytes)
