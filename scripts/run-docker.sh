@@ -6,7 +6,6 @@ for var in "$@"; do
     if [ $var == "--gpu" ]; then
         DOCKER_SERVICE="server-gpu"
         export PORT=80
-        export SERVICE="avatarify"
     fi
 done
 

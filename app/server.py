@@ -5,12 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api import style_gan
 
-service = os.getenv("SERVICE")
 
-if service == "avatarify":
-    from .api import avatarify
-else:
-    from .api import avatarify_relay as avatarify
+from .api import avatarify
+from .api import avatarify_relay
 
 app = FastAPI()
 
@@ -25,6 +22,13 @@ app.add_middleware(
 app.include_router(
     avatarify.router,
     prefix="/api/v1/avatarify",
+    tags=["api"],
+    dependencies=[],
+    responses={404: {"description": "Not found"}},
+)
+app.include_router(
+    avatarify_relay.router,
+    prefix="/api/v1/avatarifyRelay",
     tags=["api"],
     dependencies=[],
     responses={404: {"description": "Not found"}},

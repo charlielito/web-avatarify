@@ -147,7 +147,7 @@ const AvatarBuilder = props => {
                     flip: true
                 };
                 // console.log(avatarImage);
-                axios.post('api/v1/avatarify', data)
+                axios.post('api/v1/avatarifyRelay', data)
                     .then(response => {
                         // console.log(response);
                         setResultVideoAvatar(response.data.video.content);

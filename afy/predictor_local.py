@@ -32,10 +32,8 @@ class PredictorLocal:
         self.kp_driving_initial = None
         self.config_path = config_path
         self.checkpoint_path = checkpoint_path
-        self.generator, self.kp_detector = self.load_checkpoints()
-        self.fa = face_alignment.FaceAlignment(
-            face_alignment.LandmarksType._2D, flip_input=True, device=self.device
-        )
+        self.generator, self.kp_detector = None, None
+        self.fa = None, None
         self.source = None
         self.kp_source = None
         self.enc_downscale = enc_downscale
@@ -68,7 +66,17 @@ class PredictorLocal:
     def reset_frames(self):
         self.kp_driving_initial = None
 
+    def load_models(self):
+        print("******* Loading models.... ********")
+        self.generator, self.kp_detector = self.load_checkpoints()
+        self.fa = face_alignment.FaceAlignment(
+            face_alignment.LandmarksType._2D, flip_input=True, device=self.device
+        )
+
     def set_source_image(self, source_image):
+        if self.generator is None:
+            self.load_models()
+
         self.source = to_tensor(source_image).to(self.device)
         self.kp_source = self.kp_detector(self.source)
 
