@@ -20,6 +20,7 @@ def generate_video(
     model_input_size=(256, 256),
     crop_bbox=[],
     watermark="app/watermark.png",
+    debug=False,
 ):
     output = []
     stream_img_size = None
@@ -43,9 +44,6 @@ def generate_video(
         if stream_img_size is None:
             stream_img_size = frame.shape[1], frame.shape[0]
 
-        # input_frame, lrudwh = crop(
-        #     frame, p=frame_proportion, offset_x=frame_offset_x, offset_y=frame_offset_y,
-        # )
         input_frame = cv2.resize(frame, model_input_size)
 
         out = model.predict(input_frame, relative=relative)
@@ -72,6 +70,11 @@ def generate_video(
                 x = out_w // 2 - int(final_h / wm_h * wm_w) // 2
 
             out = io.overlay(out, final_watermark, x, y)
+
+        if debug:
+            cv2.imshow("Otuput", out)
+            cv2.imshow("Model input", input_frame)
+            cv2.waitKey(1)
 
         output.append(out)
 
