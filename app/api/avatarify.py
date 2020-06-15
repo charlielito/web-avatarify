@@ -103,7 +103,7 @@ def run_inference(
         relative=request.transferFace,
         # relative=True,
         crop_bbox=bbox,
-        debug=False,
+        # debug=False,
     )
     model.reset_frames()
     print("************ Done!")
