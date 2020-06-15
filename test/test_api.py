@@ -23,10 +23,11 @@ with PythonPath("."):
 
 
 url = "http://localhost:8008"
-test_image_path = "avatars/einstein.jpg"
+test_image_path = "avatars/mona.jpg"
 
 # url = "http://3.133.146.72:8000"
 # url = "https://avatarify-ejf7gidppa-uc.a.run.app"
+url = "https://avatarify-relay-ejf7gidppa-uc.a.run.app/"
 
 api_token = os.getenv("API_TOKEN")
 
@@ -42,6 +43,7 @@ else:
 
 # with tempfile.TemporaryFile(suffix=".mp4") as fp:
 fp = "temp.mp4"
+fp = "test.webm"
 # video_frames = get_frames_from_camera(0)
 # write_video(fp, video_frames)
 video_bytes = read_fn(fp)
@@ -50,6 +52,10 @@ video = base64.b64encode(video_bytes).decode()
 data = {
     "avatar": {"content": image, "source": {"imageUri": test_image_path}},
     "video": {"content": video},
+    "merge": True,
+    "fps": 30,
+    "transferFace": True,
+    "flip": True,
 }
 
 headers = {
@@ -67,10 +73,10 @@ print(response, response.text)
 print(response.json())
 print(f"Elapsed:  {time.time()-init}")
 
-show_result = False
+show_result = True
 if response.status_code == 200 and show_result:
     response = response.json()
     video_bytes = base64.b64decode(response["video"]["content"])
     for frame in bytes2video(video_bytes):
         cv2.imshow("Result", frame)
-        cv2.waitKey(200)
+        cv2.waitKey(33)
