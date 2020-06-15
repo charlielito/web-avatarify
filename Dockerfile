@@ -4,8 +4,8 @@ WORKDIR /code
 
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
-RUN pip install torch==1.1.0+cpu torchvision==0.3.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install torch==1.2.0+cpu torchvision==0.4.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install -r requirements.txt && pip install PyYAML==5.3.1
 
 RUN git clone https://github.com/alievk/first-order-model.git fomm
 RUN cd fomm && git checkout efbe0a6f17b38360ff9a446fddfbb3ce5493534c && cd ..
