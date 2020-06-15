@@ -29,6 +29,7 @@ def generate_video(
     )
 
     # load watermark image
+    final_watermark = None
     if watermark is not None:
         watermark = io.read_image(watermark)
 
@@ -54,27 +55,41 @@ def generate_video(
             out = np.concatenate([frame, out], axis=axis)
 
         if watermark is not None:
+            # Calculate just the first time
+            if final_watermark is None:
+                out_h, out_w = out.shape[:2]
+                wm_h, wm_w = watermark.shape[:2]
+
+                final_h = out_h * 0.2
+                final_watermark = cv2.resize(
+                    watermark, fx=final_h / wm_h, fy=final_h / wm_h, dsize=None
+                )
+                x = out_w - int(final_h / wm_h * wm_w)
+                y = out_h - int(final_h)
+
+                # put watermark in center
+                if merge:
+                    x = out_w // 2 - int(final_h / wm_h * wm_w) // 2
+
             # Add watermark
-            out_h, out_w = out.shape[:2]
-            wm_h, wm_w = watermark.shape[:2]
-
-            final_h = out_h * 0.2
-            final_watermark = cv2.resize(
-                watermark, fx=final_h / wm_h, fy=final_h / wm_h, dsize=None
-            )
-            x = out_w - int(final_h / wm_h * wm_w)
-            y = out_h - int(final_h)
-
-            # put watermark in center
-            if merge:
-                x = out_w // 2 - int(final_h / wm_h * wm_w) // 2
-
             out = io.overlay(out, final_watermark, x, y)
 
         if debug:
             cv2.imshow("Otuput", out)
             cv2.imshow("Model input", input_frame)
             cv2.waitKey(1)
+
+        h, w = out.shape[:2]
+        resize_even = False
+        # make it even
+        if h % 2 != 0:
+            h -= 1
+            resize_even = True
+        if w % 2 != 0:
+            w -= 1
+            resize_even = True
+        if resize_even:
+            out = cv2.resize(out, (w, h),)
 
         output.append(out)
 
