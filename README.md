@@ -3,7 +3,7 @@
 ![Example][s1] 
 
 
-This is the code base for this [website](www.liveportraits.ml) and its backend. This aims to bring technology closer to everyone, just by a couple of clicks away, democratizing it to anyone. It is based on [avatarify](https://github.com/alievk/avatarify) which uses the incredible work of a recent [paper](https://arxiv.org/pdf/2003.00196.pdf). Thanks for the authors for releasing the [code](https://github.com/AliaksandrSiarohin/first-order-model) and the trained model.
+This is the code base for this [website](https://www.liveportraits.ml) and its backend. This aims to bring technology closer to everyone, just by a couple of clicks away, democratizing it to anyone. It is based on [avatarify](https://github.com/alievk/avatarify) which uses the incredible work of a recent [paper](https://arxiv.org/pdf/2003.00196.pdf). Thanks for the authors for releasing the [code](https://github.com/AliaksandrSiarohin/first-order-model) and the trained model.
 
 In addition it allows you to record and produce a video also with your input audio.
 ### Jon Snow Example with audio
