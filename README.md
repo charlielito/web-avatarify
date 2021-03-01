@@ -21,7 +21,7 @@ In addition it allows you to record and produce a video also with your input aud
 * Everything is containerized so it should run everywhere.
 * There is a version for running it in CPU (Dockerfile) and a version for GPU (Dockerfile-gpu) -because at the beginning I thought people could wait a couple of minutes whilst processing the video :D, I was wrong, it takes too much on CPU-
 * Because the WebApp needs access to the browser's microphone and camera, it needs to be served over HTTPS. I used firebase for hosting the app because its easytouse features and automatic SSL handling, and also custom name routing.
-* I purchased the domain on [freenom.com](freenom.com) because they have 1 year free `.ml` domains.
+* I purchased the domain on [https://freenom.com](freenom.com) because they have 1 year free `.ml` domains.
 * The backend that runs the model (final version with GPU) were deployed in azure in a single Virtual Machine (because this is just a demo and more machines will cost considerably more). 
 * One tricky implementation detail is that because the front end is served over HTTP, the backend also needs to be served over HTTPS. This will complicate things a lot, so at the end the fast solution (I know not the most elegant one) was to use a relay server with HTTPS using Google Cloud Run (manages automatically the HTTPS part) that just redirects the petitions to the virtual machine.
 
