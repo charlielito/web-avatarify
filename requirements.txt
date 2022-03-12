@@ -4,7 +4,7 @@ fastapi==0.65.2
 imageio==2.8.0
 opencv-python==4.2.0.34
 pandas==1.0.3
-Pillow==8.3.2
+Pillow==9.0.1
 python-multipart==0.0.5
 PyYAML==5.4
 requests==2.23.0
